@@ -9,10 +9,10 @@ st.set_page_config(
 )
 
 # --- Imports ---
-from quantumguard.components import header, sidebar_nav, footer
-from quantumguard.simulator import run_simulation, sweep_eve
-from quantumguard.visuals import plot_match_hist, plot_qber_curve, plot_bloch_preview
-from quantumguard.utils import build_run_dataframe, download_buttons
+from components.components import header, sidebar_nav, footer
+from components.simulator import run_simulation, sweep_eve
+from components.visuals import plot_match_hist, plot_qber_curve, plot_bloch_preview
+from components.utils import build_run_dataframe, download_buttons
 
 # --- Header & Sidebar ---
 header()
@@ -59,7 +59,7 @@ elif page == "Simulator":
 
 else:
     # --- Static Pages ---
-    from quantumguard.components import section_theory, section_team, section_faq, section_contact
+    from components.components import section_theory, section_team, section_faq, section_contact
     if page == "Theory":
         section_theory()
     elif page == "Team":
