@@ -1,12 +1,13 @@
 import numpy as np
 import json
 from pathlib import Path
-import streamlit as st  # <<--- ADD THIS
+import streamlit as st
+import pandas as pd  # Added pandas import
 
 def bits_to_str(bits: np.ndarray) -> str:
     """Convert numpy bit array into string '010101'."""
     return "".join(str(int(b)) for b in bits)
-#push issue 
+
 def bits_to_hex(bits: np.ndarray) -> str:
     """Convert bit array into hex string."""
     bit_str = bits_to_str(bits)
@@ -32,7 +33,6 @@ def save_log_to_json(sim_result: dict, filename: str, out_dir: str = "exports") 
 
 def build_run_dataframe(sim_result: dict):
     """Convert simulation result to pandas DataFrame for display."""
-    import pandas as pd
     df = pd.DataFrame({
         "Index": sim_result['final_key_idx_global'],
         "Alice": sim_result['final_key_bits'],
@@ -41,9 +41,40 @@ def build_run_dataframe(sim_result: dict):
 
 def download_buttons(df, sim_result):
     """Streamlit buttons to download CSV / TXT keys."""
+    # Ensure exports directory exists before saving any files
+    Path("exports").mkdir(exist_ok=True)
+    
     csv_path = Path("exports") / "sim_result.csv"
     df.to_csv(csv_path, index=False)
-    st.download_button("📥 Download CSV", str(csv_path), file_name="sim_result.csv")
     
+    # Read the CSV file content for download
+    with open(csv_path, "r") as f:
+        csv_data = f.read()
+    
+    st.download_button(
+        "📥 Download CSV",
+        data=csv_data,
+        file_name="sim_result.csv",
+        mime="text/csv"
+    )
+    
+    # Save and create download buttons for other formats
     txt_path = save_key_to_file(sim_result['final_key_bits'], "final_key.txt")
-    st.download_button("📥 Download Key (TXT)", str(txt_path), file_name="final_key.txt")
+    with open(txt_path, "r") as f:
+        txt_data = f.read()
+    st.download_button(
+        "📥 Download Key (TXT)",
+        data=txt_data,
+        file_name="final_key.txt",
+        mime="text/plain"
+    )
+    
+    json_path = save_log_to_json(sim_result, "sim_result.json")
+    with open(json_path, "r") as f:
+        json_data = f.read()
+    st.download_button(
+        "📥 Download Log (JSON)",
+        data=json_data,
+        file_name="sim_result.json",
+        mime="application/json"
+    )
